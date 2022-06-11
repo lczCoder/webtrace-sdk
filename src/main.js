@@ -1,4 +1,4 @@
-import { alert } from "@/module/alert";
+/* 入口文件 */
 
 
 
