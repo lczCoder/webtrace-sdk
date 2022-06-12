@@ -7,6 +7,20 @@
     <title>Document</title>
   </head>
   <body>
-    <script src="../dist/bundle.es.js"></script>
+    <h1>Hello Webtrace-Sdk</h1>
+    <script src="./dist/bundle.umd.js"></script>
+    <script>
+      var sdk = new WebTraceSdk({
+        appId: '1',
+        requestUrl: "http://localhost:3001",
+        options: {
+          pv: true,
+          performance: true,
+          error: false,
+          debug: true,
+          catch: true,
+        },
+      });
+    </script>
   </body>
 </html>
