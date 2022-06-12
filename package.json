@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@rollup/plugin-json": "^4.1.0",
     "rollup": "^2.75.6"
   },
   "devDependencies": {

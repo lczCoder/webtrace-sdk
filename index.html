@@ -7,20 +7,19 @@
     <title>Document</title>
   </head>
   <body>
+    <h1>Hello Webtrace-Sdk</h1>
     <script src="./dist/bundle.umd.js"></script>
     <script>
       var sdk = new WebTraceSdk({
-        appId: "123",
+        appId: '1',
         requestUrl: "http://localhost:3001",
-      });
-      setTimeout(() => {
-        const x = ewqe;
-      }, 3000);
-      const x = new Promise((resolve, reject) => {
-        reject("错误了xxx");
-      });
-      x.catch((err) => {
-        console.log("e", err);
+        options: {
+          pv: true,
+          performance: true,
+          error: false,
+          debug: true,
+          catch: true,
+        },
       });
     </script>
   </body>

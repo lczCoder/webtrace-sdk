@@ -1,5 +1,6 @@
 import babel from "rollup-plugin-babel"; // babel代码转义
 import commonjs from "@rollup/plugin-commonjs"; // commonjs转换
+import json from '@rollup/plugin-json'
 import modules from "@rollup/plugin-node-resolve"; // 解析node_modules中依赖的外部模块
 import server from "rollup-plugin-serve"; // 本地服务
 import liverload from "rollup-plugin-livereload"; // 热更新
@@ -17,6 +18,7 @@ export default {
   plugins: [
     modules(),
     commonjs(),
+    json(),
     babel({
       exclude: "node_modules/**", // 排除node_modules目录
     }),
