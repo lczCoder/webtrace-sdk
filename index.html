@@ -7,6 +7,21 @@
     <title>Document</title>
   </head>
   <body>
-    <script src="../dist/bundle.es.js"></script>
+    <script src="./dist/bundle.umd.js"></script>
+    <script>
+      var sdk = new WebTraceSdk({
+        appId: "123",
+        requestUrl: "http://localhost:3001",
+      });
+      setTimeout(() => {
+        const x = ewqe;
+      }, 3000);
+      const x = new Promise((resolve, reject) => {
+        reject("错误了xxx");
+      });
+      x.catch((err) => {
+        console.log("e", err);
+      });
+    </script>
   </body>
 </html>

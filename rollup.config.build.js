@@ -8,8 +8,9 @@ const path = require('path');
 export default {
   input: "./src/main.js", // 入口文件
   output: { 
-    file: "./dist/bundle.es.js",
-    format:'es',
+    file: "./dist/bundle.umd.js",
+    format:'umd',
+    name: "WebTraceSdk"
   },
   plugins: [
     modules(),
@@ -20,7 +21,9 @@ export default {
     terser(),
     alias({
       entries:[
-        {find: '@', replacement: path.resolve(__dirname, 'src')} // 别名设置
+        {find: '@', replacement: path.resolve(__dirname, 'src')}, // 别名设置
+        {find: '@m', replacement: path.resolve(__dirname, 'src/module')},
+        { find: "@u", replacement: path.resolve(__dirname, "src/utils") },
       ]
     }),
   ],
