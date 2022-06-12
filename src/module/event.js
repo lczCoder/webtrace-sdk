@@ -1,23 +1,18 @@
 /* 上报事件处理 */
-import {g_config} from '@m/config'
+import { _httpSend } from "@m/http";
+
 export default {
   init() {
-    console.log('事件初始化');
     // 网页隐藏上报缓存中的数据
     window.document.addEventListener("visibilitychange", () => {
+      console.log('document.visibilityState',document.visibilityState);
       if (document.visibilityState === "hidden") {
-        navigator.sendBeacon(
-          "http://localhost:3001/post",
-          JSON.stringify(g_config)
-        );
+        httpSend("/post", {city:'北京',age:1000});
       }
     });
     // 网页销毁,上报缓存中的数据
-    window.onbeforeunload = function(e) {
-      navigator.sendBeacon(
-        "http://localhost:3001/post",
-        JSON.stringify({ name: "关闭" })
-      );
-    }
+    window.onbeforeunload = function (e) {
+      httpSend("/post", {city:'上海',age:500});
+    };
   },
 };

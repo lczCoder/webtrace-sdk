@@ -3,17 +3,17 @@ import { g_config } from "@m/config";
 
 export default {
   init() {
-    if(g_config.error){
-      console.log("错误初始化");
+    // 判断是否自动开启错误上报
+    if (g_config.error) {
       window.addEventListener("error", (event) => {
         console.log("error1", event);
       });
       // 监控未处理的promise.reject事件
       window.addEventListener("unhandledrejection", (event) => {
-        console.log(event.reason);
+        console.log('error2',event.reason);
       });
-    }else{
-      console.log('不进行错误监控');
+    } else {
+      return false;
     }
   },
 };
