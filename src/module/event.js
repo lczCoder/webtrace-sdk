@@ -7,12 +7,12 @@ export default {
     window.document.addEventListener("visibilitychange", () => {
       console.log('document.visibilityState',document.visibilityState);
       if (document.visibilityState === "hidden") {
-        httpSend("/post", {city:'北京',age:1000});
+        _httpSend("/post", {city:'北京',age:1000});
       }
     });
     // 网页销毁,上报缓存中的数据
     window.onbeforeunload = function (e) {
-      httpSend("/post", {city:'上海',age:500});
+      _httpSend("/post", {city:'上海',age:500});
     };
   },
 };
