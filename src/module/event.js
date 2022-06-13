@@ -6,7 +6,7 @@ export default {
     // 网页隐藏上报缓存中的数据
     window.document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") {
-        // _httpSend("/post", {city:'北京',age:1000});
+        _httpSend("/post", {city:'北京',age:1000});
       }
     });
     // 网页销毁,上报缓存中的数据
