@@ -1,7 +1,6 @@
 import _Config from "@m/config"; //配置中心
 import _Error from "@m/error"; // 错误监控
 import _Event from "@m/event"; // 事件处理
-import _Http from "@m/http"; // 网络请求
 class WebTraceSdk {
   constructor(options) {
     this.init(options);

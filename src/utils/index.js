@@ -40,7 +40,7 @@ export const __$browserOS = () => {
   @param {number} len 生成字母位数
   @return {string} 随机字母
 */
-function randomLetter(len = 1) {
+const randomLetter = (len = 1) => {
   let noun = "";
   for (let i = 0; i < len; i++) {
     noun += String.fromCharCode(
@@ -48,13 +48,17 @@ function randomLetter(len = 1) {
     );
   }
   return noun;
-}
+};
 
-// 设备标识符
+// 获取设备标识符
 export const __$uuid = () => {
+  const result = getLocalSessionKey("Webtrace_UUID");
+  if (result && result !== "none") return result;
   const date = new Date().getTime() + "";
   const random = Math.floor(Math.random() * 100);
-  return randomLetter(3) + "_" + date.substring(8, 13) + "_" + random;
+  const data = randomLetter(3) + "_" + date.substring(8, 13) + "_" + random;
+  if (result == "none") localStorage.setItem("Webtrace_UUID", data);
+  return data;
 };
 
 /* 
@@ -71,4 +75,16 @@ export const __$checkInit = (appid, url) => {
   if (typeof url !== "string" || !/http/.test(url))
     return { check: false, msg: "requestUrl Incorrect type" };
   return { check: true };
+};
+
+/* 
+  @desc 判断LocalSession 是否存在key 有取 无存
+  @param {string} key LocalSession key
+*/
+const getLocalSessionKey = (key) => {
+  //检测可支持性
+  if (!window.localStorage) {
+    return false;
+  }
+  return localStorage.getItem(key) || "none";
 };
