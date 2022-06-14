@@ -1,8 +1,11 @@
 {
-  "name": "grollup",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "webtrace-sdk",
+  "version": "1.0.3",
+  "description": "浏览器环境监控SDK",
+  "main": "lib/bundel.cjs.js",
+  "jsnext:main": "lib/bundel.esm.js",
+  "module": "lib/bundel.esm.js",
+  "browser": "lib/bundel.umd.js",
   "dependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "rollup": "^2.75.6"
@@ -23,6 +26,6 @@
     "dev": "rollup --config rollup.config.dev.js -w"
   },
   "keywords": [],
-  "author": "",
+  "author": "linchengzhe",
   "license": "ISC"
 }

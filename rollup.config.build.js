@@ -5,16 +5,37 @@ import json from '@rollup/plugin-json'
 import { terser } from "rollup-plugin-terser"; // js代码格式压缩 支持es6
 import alias from "@rollup/plugin-alias"; // 别名
 const path = require('path'); 
+import pkg from './package.json'
 
 export default {
   input: "./src/main.js", // 入口文件
-  output: { 
-    file: "./dist/bundle.umd.js",
-    format:'umd',
-    name: "WebTraceSdk"
-  },
+  // output: { 
+  //   file: "lib/bundle.umd.js",
+  //   format:'umd',
+  //   name: "WebTraceSdk"
+  // },
+  output: [
+    {
+      file:pkg.main,
+      format:'cjs',
+    },
+    {
+      file:pkg.module,
+      format:'esm',
+    },
+    {
+      file:pkg.browser,
+      format:'umd',
+      name:'WebTraceSdk'
+    }
+  ],
   plugins: [
-    modules(),
+    modules({
+      preferBuiltins: true,
+      jsnext: true,
+      main: true,
+      brower: true,
+    }),
     commonjs(),
     json(),
     babel({

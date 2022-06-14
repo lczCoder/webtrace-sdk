@@ -25,13 +25,8 @@ export const http_config = {
 export default {
   init(config) {
     const { options = {}, appId, requestUrl } = config;
-    const { check, msg } = __$checkInit(appId, requestUrl);
-    if (check) {
       g_config.requestUrl = requestUrl;
       http_config.appid = appId;
       Object.assign(g_config, options);
-    } else {
-      throw new Error(msg);
-    }
   },
 };

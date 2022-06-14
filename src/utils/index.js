@@ -1,4 +1,6 @@
 /* 自定义工具函数 */
+// 吧export 提出来到顶部，可以直接查看有哪些工具函数
+import { ErrorStatus } from "@u/declare";
 
 // 获取浏览器版本
 export const __$getBrowserType = () => {
@@ -67,14 +69,32 @@ export const __$uuid = () => {
   @param {string} url  sdk requestUrl
   @return {check: boolean, msg: string} 是否校验通过, 错误类型
 */
-export const __$checkInit = (appid, url) => {
-  if (!appid || !url)
-    return { check: false, msg: "appid or requestUrl is empty" };
-  if (typeof appid !== "string")
-    return { check: false, msg: "appid Incorrect type" };
-  if (typeof url !== "string" || !/http/.test(url))
-    return { check: false, msg: "requestUrl Incorrect type" };
-  return { check: true };
+export const __$checkInit = (appid, url, opts) => {
+  let _status = true; // 校验状态
+  if (!appid || !url) {
+    _status = false;
+    __$errorLog({ msg: "102", desc: "init()参数appId和requestUrl不能为空" });
+    return _status
+  }
+  if (typeof appid !== "string") {
+    _status = false;
+    __$errorLog({ msg: "101", desc: "init()参数appId类型必须为string类型" });
+    return _status
+  }
+  if (typeof url !== "string" || !/http/.test(url)) {
+    _status = false;
+    __$errorLog({ msg: "101", desc: "init()参数requestUrl必须是http地址" });
+    return _status
+  }
+  if (opts && Object.prototype.toString.call(opts) !== "[object Object]") {
+    _status = false;
+    __$errorLog({
+      msg: "101",
+      desc: "init()如果配置了options参数,类型必须为object",
+    });
+    return _status
+  }
+  return _status;
 };
 
 /* 
@@ -87,4 +107,16 @@ const getLocalSessionKey = (key) => {
     return false;
   }
   return localStorage.getItem(key) || "none";
+};
+
+/* 
+  @desc 控制台error提示
+  @param {msg:string,desc:''} msg 错误信息
+*/
+
+export const __$errorLog = ({ msg, desc } = {}) => {
+  console.error(`
+     ErrorType: <${ErrorStatus[msg]}>,
+     ErrorDesc: ${desc}
+  `);
 };
