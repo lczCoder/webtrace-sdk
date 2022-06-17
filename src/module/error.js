@@ -5,9 +5,10 @@ export default {
   init() {
     // 判断是否自动开启错误上报
     if (g_config.error) {
-      window.onerror = function (event) {
+      // 监控JavaScript错误
+      window.addEventListener("error", (event)=>{
         console.log("error1", event);
-      };
+      });
       // 监控未处理的promise.reject事件
       window.addEventListener("unhandledrejection", (event) => {
         console.log("error2", event.reason);

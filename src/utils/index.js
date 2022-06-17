@@ -2,8 +2,24 @@
 // 吧export 提出来到顶部，可以直接查看有哪些工具函数
 import { ErrorStatus } from "@u/declare";
 
-// 获取浏览器版本
-export const __$getBrowserType = () => {
+
+/*------------utils导出函数列表------------------------------------------*/
+export {
+  __$getBrowserType, // 获取浏览器版本
+  __$browserOS, // 获取当前操作系统
+  __$uuid, // 获取标识符
+  __$checkInit, // 校验sdk appid requestUrl
+  __$errorLog, // 控制台错误输出
+  __$cutDecimal, // 截取小数位,不四舍五入
+};
+/*-----------utils内部函数列表-------------------------------------------*/
+/* 
+  1、randomLetter  // 随机生成字母
+  2、getLocalSessionKey  // 判断LocalSession 是否存在key 有取 无存
+*/
+
+
+const __$getBrowserType = () => {
   const ua = window.window.navigator.userAgent.toLowerCase();
   const typeMap = {
     ie: /msie/.test(ua) && !/opera/.test(ua), //匹配IE浏览器
@@ -18,8 +34,7 @@ export const __$getBrowserType = () => {
   return browserType.join(",");
 };
 
-// 获取当前操作系统
-export const __$browserOS = () => {
+const __$browserOS = () => {
   const isWin =
     window.navigator.platform == "Win32" ||
     window.navigator.platform == "Windows";
@@ -36,9 +51,7 @@ export const __$browserOS = () => {
   if (isLinux) return "Linux";
   return "other";
 };
-
 /* 
-  @desc 随机生成字母
   @param {number} len 生成字母位数
   @return {string} 随机字母
 */
@@ -53,7 +66,7 @@ const randomLetter = (len = 1) => {
 };
 
 // 获取设备标识符
-export const __$uuid = () => {
+const __$uuid = () => {
   const result = getLocalSessionKey("Webtrace_UUID");
   if (result && result !== "none") return result;
   const date = new Date().getTime() + "";
@@ -64,27 +77,26 @@ export const __$uuid = () => {
 };
 
 /* 
-  @desc 校验sdk appid requestUrl
   @param {string} appid sdk appid
   @param {string} url  sdk requestUrl
   @return {check: boolean, msg: string} 是否校验通过, 错误类型
 */
-export const __$checkInit = (appid, url, opts) => {
+const __$checkInit = (appid, url, opts) => {
   let _status = true; // 校验状态
   if (!appid || !url) {
     _status = false;
     __$errorLog({ msg: "102", desc: "init()参数appId和requestUrl不能为空" });
-    return _status
+    return _status;
   }
   if (typeof appid !== "string") {
     _status = false;
     __$errorLog({ msg: "101", desc: "init()参数appId类型必须为string类型" });
-    return _status
+    return _status;
   }
   if (typeof url !== "string" || !/http/.test(url)) {
     _status = false;
     __$errorLog({ msg: "101", desc: "init()参数requestUrl必须是http地址" });
-    return _status
+    return _status;
   }
   if (opts && Object.prototype.toString.call(opts) !== "[object Object]") {
     _status = false;
@@ -92,13 +104,12 @@ export const __$checkInit = (appid, url, opts) => {
       msg: "101",
       desc: "init()如果配置了options参数,类型必须为object",
     });
-    return _status
+    return _status;
   }
   return _status;
 };
 
 /* 
-  @desc 判断LocalSession 是否存在key 有取 无存
   @param {string} key LocalSession key
 */
 const getLocalSessionKey = (key) => {
@@ -110,13 +121,28 @@ const getLocalSessionKey = (key) => {
 };
 
 /* 
-  @desc 控制台error提示
   @param {msg:string,desc:''} msg 错误信息
 */
 
-export const __$errorLog = ({ msg, desc } = {}) => {
+const __$errorLog = ({ msg, desc } = {}) => {
   console.error(`
      ErrorType: <${ErrorStatus[msg]}>,
      ErrorDesc: ${desc}
   `);
+};
+
+/* 
+  @param {number} num 数值
+  @param {number} len 截取小数位数
+  @return 处理完成的小数
+*/
+const __$cutDecimal = (num, len) => {
+  num = num.toString();
+  let index = num.indexOf(".");
+  if (index !== -1) {
+    num = num.substring(0, len + index + 1);
+  } else {
+    num = num.substring(0);
+  }
+  return parseFloat(num).toFixed(len);
 };

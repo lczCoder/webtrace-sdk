@@ -4,6 +4,7 @@ import { __$checkInit, __$errorLog } from "@u/";
 import "./module/device";
 import pkg from "../package.json";
 
+
 function init(config = {}) {
   // 校验参数类型
   if (Object.prototype.toString.call(config) === "[object Object]") {
