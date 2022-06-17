@@ -11,7 +11,6 @@ class WebTraceSdk {
   init(opts) {
     _Config.init(opts); // sdk基础配置
     _Error.init(); // 错误监控初始化
-    // _Event.init(); // 事件处理初始化
     _Cache.init(); // 缓存处理初始化
   }
   // 统计自定义js事件耗时

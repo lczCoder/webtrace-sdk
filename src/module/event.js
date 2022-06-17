@@ -9,6 +9,7 @@ export default {
 
 // 时间初始记录
 export const _recordTime = (key) => {
+  console.log("1");
   if (!timeMap.has(key)) {
     timeMap.set(key, new Date().getTime());
     return false;
@@ -21,10 +22,8 @@ export const _recordTime = (key) => {
 };
 // 时间结果处理
 export const _dealTime = (key) => {
-  if (timeMap.has(`${key}__again__`)) {
-    timeMap.delete(`${key}__again__`);
-    return false;
-  }
+  const e_time = new Date().getTime(); // 当前时间
+  // 未定义
   if (!timeMap.has(key)) {
     __$errorLog({
       msg: "100",
@@ -32,11 +31,14 @@ export const _dealTime = (key) => {
     });
     return false;
   }
-  const s_time = timeMap.get(key); // 开始时间
-  const e_time = new Date().getTime(); // 当前时间
-  const cost = __$cutDecimal((e_time - s_time) / 1000, 5);
-  timeMap.delete(key);
-  console.log(`'${key}'事件，一共耗时${cost}秒`);
+  // 有重复初始化情况
+  if (timeMap.has(`${key}__again__`)) {
+    timeMap.delete(`${key}__again__`);
+    const s_time = timeMap.get(key); // 开始时间
+    const cost = __$cutDecimal((e_time - s_time) / 1000, 5);
+    timeMap.delete(key);
+    console.log(`'${key}'事件，一共耗时${cost}秒`);
+  }
   /* 
     1、判断是否开启缓存上报
       true : 把事件存入事件缓存队列中
