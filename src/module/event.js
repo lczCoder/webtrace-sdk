@@ -9,7 +9,6 @@ export default {
 
 // 时间初始记录
 export const _recordTime = (key) => {
-  console.log("1");
   if (!timeMap.has(key)) {
     timeMap.set(key, new Date().getTime());
     return false;

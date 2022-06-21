@@ -9,11 +9,6 @@ import pkg from './package.json'
 
 export default {
   input: "./src/main.js", // 入口文件
-  // output: { 
-  //   file: "lib/bundle.umd.js",
-  //   format:'umd',
-  //   name: "WebTraceSdk"
-  // },
   output: [
     {
       file:pkg.main,

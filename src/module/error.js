@@ -23,6 +23,10 @@ export default {
   init() {
     // TODO: 需要考虑 一个错误事件，多次上报的问题。一个按钮点击错误事件，多次上报是没有必要的？？？
     rewriteError();
+    // 用户交互行为上报
+    // window.addEventListener('click', function(e){
+    //   console.log('点击事件',e);
+    // })
     // 判断是否自动开启错误上报
     if (g_config.error) {
       // 监控JavaScript错误
@@ -80,7 +84,7 @@ export default {
         errorModel("promise", source);
       });
     } else {
-      return false; // 不启用错监控
+      return false; // 不进行自动错误上报
     }
   },
 };
