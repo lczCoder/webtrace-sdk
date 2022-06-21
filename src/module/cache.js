@@ -1,9 +1,10 @@
+import { g_config } from "@m/config";
+
 /* 缓存处理 */
 const sessionDB = sessionStorage.getItem("EVENT_QUEUE");
 export const pageHashMap = new Map([]); // 页面路由缓存
 export const eventQueue = sessionDB ? JSON.parse(sessionDB) : []; // 事件队列
 export const timeMap = new Map(); // 统计事件耗时
-const cacheLen = 10; // 事件队列缓存数量
 
 export default {
   init() {
@@ -26,7 +27,7 @@ export default {
 
 export const _addEventQueue = (event) => {
   eventQueue.push(event);
-  if (eventQueue.length > cacheLen) {
+  if (eventQueue.length > g_config.cacheMax) {
     // 事件上报
     // 清除队列
     eventQueue.length = 0;
