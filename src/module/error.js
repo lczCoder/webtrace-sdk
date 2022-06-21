@@ -1,19 +1,65 @@
 /* 错误处理 */
 import { g_config } from "@m/config";
-import {ErrorJsType} from '@u/declare'
+import { ErrorJsType } from "@u/declare";
+import { _addEventQueue } from "@m/cache";
+/**
+ * @param {*} key 错误类型
+ * @param {*} opt 错误信息
+ */
+const errorModel = (key, opt) => {
+  const data = {
+    eventType: "error",
+    url: window.location.href,
+    time: Date.now(),
+    errorInfo: { errorType: key, ...opt },
+  };
+  console.log("data", data);
+  // emit(data);
+  _addEventQueue(data);
+};
 
 export default {
   init() {
+    rewriteError();
     // 判断是否自动开启错误上报
     if (g_config.error) {
       // 监控JavaScript错误
-      window.addEventListener("error", (event)=>{
-        console.log(event)
-       
-      },true);
+      window.addEventListener(
+        "error",
+        (event) => {
+          const target = event.target || event.srcElement;
+          if (
+            target instanceof HTMLElement &&
+            ["LINK", "SCRIPT", "IMG"].indexOf(target.nodeName) !== -1
+          ) {
+            console.log("资源加载错误", "资源类型", event);
+            errorModel(
+              target.nodeName.toLowerCase(),
+              Object.assign({}, { target: target.outerHTML })
+            );
+          } else {
+            const { message, filename, lineno, colno, error } = event;
+            errorModel(
+              "js",
+              Object.assign(
+                {},
+                {
+                  message,
+                  filename,
+                  lineno,
+                  colno,
+                  stack: g_config.debug ? error?.stack : null,
+                }
+              )
+            );
+          }
+        },
+        true
+      );
+
       // 监控未处理的promise.reject事件
       window.addEventListener("unhandledrejection", (event) => {
-        console.log("promise", event.reason);
+        console.log("promise", event);
       });
     } else {
       return false;
@@ -21,39 +67,6 @@ export default {
   },
 };
 
-function recordJavaScriptError() {
+function rewriteError() {
   // 重写console.error, 可以捕获更全面的报错信息
-  var oldError = console.error;
-  console.error = function () {
-    // arguments的长度为2时，才是error上报的时机
-    // if (arguments.length < 2) return;
-    var errorMsg = arguments[0] && arguments[0].message;
-    var url = WEB_LOCATION;
-    var lineNumber = 0;
-    var columnNumber = 0;
-    var errorObj = arguments[0] && arguments[0].stack;
-    if (!errorObj) errorObj = arguments[0];
-    // 如果onerror重写成功，就无需在这里进行上报了
-    !jsMonitorStarted && siftAndMakeUpMessage(errorMsg, url, lineNumber, columnNumber, errorObj);
-    return oldError.apply(console, arguments);
-  };
-  // 重写 onerror 进行jsError的监听
-  window.onerror = function(errorMsg, url, lineNumber, columnNumber, errorObj)
-  {
-    jsMonitorStarted = true;
-    var errorStack = errorObj ? errorObj.stack : null;
-    siftAndMakeUpMessage(errorMsg, url, lineNumber, columnNumber, errorStack);
-  };
-
-  function siftAndMakeUpMessage(origin_errorMsg, origin_url, origin_lineNumber, origin_columnNumber, origin_errorObj) {
-    var errorMsg = origin_errorMsg ? origin_errorMsg : '';
-    var errorObj = origin_errorObj ? origin_errorObj : '';
-    var errorType = "";
-    if (errorMsg) {
-      var errorStackStr = JSON.stringify(errorObj)
-      errorType = errorStackStr.split(": ")[0].replace('"', "");
-    }
-    var javaScriptErrorInfo = new JavaScriptErrorInfo(JS_ERROR, errorType + ": " + errorMsg, errorObj);
-    javaScriptErrorInfo.handleLogInfo(JS_ERROR, javaScriptErrorInfo);
-  };
-};
+}
