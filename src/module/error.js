@@ -3,16 +3,17 @@ import { g_config } from "@m/config";
 import { ErrorJsType } from "@u/declare";
 import { _addEventQueue } from "@m/cache";
 /**
- * @param {*} key 错误类型
+ * @desc 错误上报数据结构模型
+ * @param {*} type 错误类型
  * @param {*} opt 错误信息
  */
-const errorModel = (key, opt) => {
+const errorModel = (type, opt) => {
   const data = {
     eventType: "error",
     url: window.location.href,
     time: Date.now(),
     errorInfo: {
-      errorType: key,
+      type,
       ...opt,
     },
   };
@@ -111,7 +112,7 @@ function _errorFetchInit() {
         .then((res) => {
           if (!res.ok) {
             // 当status不为2XX的时候，上报错误
-            console.log("错误了11", res);
+            console.log("错误了11", res,arguments[0]);
           }
           return res;
         })
@@ -127,7 +128,7 @@ function _errorFetchInit() {
 }
 
 function _errorAjaxInit() {
-  let ajaxUrl = "";
+  let ajaxUrl = "12";
   let protocol = window.location.protocol;
   if (protocol === "file:") return;
   // 处理XMLHttpRequest
@@ -140,7 +141,7 @@ function _errorAjaxInit() {
   let _handleEvent = function (event,url) {
     try {
       if (event && event.currentTarget && event.currentTarget.status !== 200) {
-        console.log("xhr错误", event);
+        console.log("xhr错误", event,url);
         // 在此上报错误
       }
     } catch (e) {
@@ -151,10 +152,8 @@ function _errorAjaxInit() {
     ajaxUrl = arguments[1];
     return _oldOpen.apply(this, arguments);
   };
-  xmlhttp.prototype.send = function (url=ajaxUrl) {
-    this.addEventListener("error", (e)=>_handleEvent(e,url)); // 失败
-    this.addEventListener("load", (e)=>_handleEvent(e,url)); // 完成
-    this.addEventListener("abort", (e)=>_handleEvent(e,url)); // 取消
+  xmlhttp.prototype.send = function () {
+    this.addEventListener("error", (e)=>_handleEvent(e,ajaxUrl)); // 失败
     return _oldSend.apply(this, arguments);
   };
 }

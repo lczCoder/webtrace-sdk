@@ -12,7 +12,7 @@ export const g_config = {
   error: true, // 是否开启错误上报
   debug: false, // 是否开启debug模式
   cache: true, // 是否采用缓存上报策略
-  cacheMax:10 // 默认最大缓存上报数量
+  cacheMax:100 // 默认最大缓存上报数量
 };
 
 // 网络请求接口默认传参

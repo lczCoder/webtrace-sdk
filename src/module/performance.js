@@ -1,6 +1,23 @@
 import { g_config } from "@m/config";
+import { _addEventQueue } from "@m/cache";
+import { __$cutDecimal } from "@u/";
 
-/* 网页性能 */
+/**
+ * @desc 性能上报数据结构模型
+ * @param {*} type 数据类型 首屏加载 | 资源加载
+ * @param {*} opt 监控数据
+ */
+const performanceModel = (type, opt) => {
+  const data = {
+    eventType: "performance",
+    url: window.location.href,
+    time: Date.now(),
+    info: { type, ...opt },
+  };
+  _addEventQueue(data); // 加入事件队列
+};
+
+/* 网页性能上报 */
 export default {
   init() {
     if (g_config.performance) {
@@ -8,20 +25,6 @@ export default {
       if (!result) {
         console.warn("当前平台不支持<performance>相关的api");
       }
-      // window.addEventListener("load", function () {
-      //   if (sessionStorage.getItem("FIRST_LOAD")!=='1') {
-      //     console.log("window加载完成");
-      //     const t = window.performance.timing;
-      //     console.log(`
-      //     请求响应耗时:${t.responseStart - t.requestStart}
-      //     DOM 解析耗时：${t.domInteractive - t.responseEnd}
-      //     资源加载耗时:${t.loadEventStart - t.domContentLoadedEventEnd}
-      //     首次渲染耗时:${t.responseEnd - t.fetchStart}
-      //     首次可交互耗时:${t.domInteractive - t.fetchStart}
-      //   `);
-      //     sessionStorage.setItem("FIRST_LOAD", "1");
-      //   }
-      // });
     }
   },
 };
@@ -39,7 +42,7 @@ const compatibleDeal = () => {
   }
   // 判断performance api是否可用
   if (window.performance) {
-    firstLoad();
+    firstLoadTiming();
     return true;
   }
   return false;
@@ -50,32 +53,59 @@ const createPerformance = () => {
   // 观察者，监听Performance变化
   const observer = new PerformanceObserver((list) => {
     list.getEntries().forEach((info) => {
-      console.table(info);
       // 首次加载
-      if (info.entryType == "navigation") {
+      if (
+        info.entryType == "navigation" &&
+        !sessionStorage.getItem("FIRST_LOAD")
+      ) {
+        dealFirstTiming(info);
+        sessionStorage.setItem("FIRST_LOAD", 1);
       }
-      if (info.entryType == "") {
+      if (info.entryType == "resource") {
+        const status = info.responseEnd && info.requestStart ? true : false; // 接口是否请求成功
+        const type = status ? info.initiatorType : "url_err";
+        performanceModel("resource", {
+          type, // 加载资源类型
+          file: info.name, // 资源
+          time_cost: status
+            ? __$cutDecimal(info.responseEnd - info.requestStart, 2)
+            : 0, // 请求耗时
+        });
       }
     });
   });
   // 观察的类型
   observer.observe({
-    entryTypes: ["navigation", "resource"],
     /**
-    frame：event-loop 时的每一帧
-    navigation：导航
-    resource：资源
-    mark: 打点，得到一个时间戳
-    measure：在两个点之间测量
-    paint：绘制
-    longtask(好像只有 chrome支持)：任何在浏览器中执行超过 50 ms 的任务，都是 long task
+      frame：event-loop 时的每一帧
+      navigation：导航加载（首屏）
+      resource：资源类型
+      mark: 打点
+      measure：计算打点间隔时间
+      paint：绘制
+      longtask 长任务 
    */
+    entryTypes: ["navigation", "resource"],
   });
 };
 
-// 初始获取一次首屏加载数据
-const firstLoad = () => {
-  const t = window.performance.timing;
-  console.log("首次加载", t);
-  
+// 初始获取一次首屏加载数据, 必须在window.load后计算
+const firstLoadTiming = () => {
+  window.addEventListener("load", function () {
+    if (!sessionStorage.getItem("FIRST_LOAD")) {
+      dealFirstTiming(window.performance.timing);
+      sessionStorage.setItem("FIRST_LOAD", 1);
+    }
+  });
+};
+
+// 处理首屏加载数据
+const dealFirstTiming = (info) => {
+  performanceModel("navigation", {
+    frt: __$cutDecimal(info.responseEnd - info.fetchStart, 2), // 首次渲染耗时
+    rrt: __$cutDecimal(info.responseStart - info.requestStart, 2), // 请求响应耗时
+    dpt: __$cutDecimal(info.domInteractive - info.responseEnd, 2), // DOM 解析耗时
+    rlt: __$cutDecimal(info.loadEventStart - info.domContentLoadedEventEnd, 2), // 资源加载耗时
+    fit: __$cutDecimal(info.domInteractive - info.fetchStart, 2), // 首次可交互耗时
+  });
 };
