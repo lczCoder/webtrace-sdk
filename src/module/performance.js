@@ -62,14 +62,10 @@ const createPerformance = () => {
         sessionStorage.setItem("FIRST_LOAD", 1);
       }
       if (info.entryType == "resource") {
-        const status = info.responseEnd && info.requestStart ? true : false; // 接口是否请求成功
-        const type = status ? info.initiatorType : "url_err";
         performanceModel("resource", {
-          type, // 加载资源类型
+          type: info.initiatorType, // 加载资源类型
           file: info.name, // 资源
-          time_cost: status
-            ? __$cutDecimal(info.responseEnd - info.requestStart, 2)
-            : 0, // 请求耗时
+          time_cost: __$cutDecimal(info.duration, 2), // 请求耗时
         });
       }
     });

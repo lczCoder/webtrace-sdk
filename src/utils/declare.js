@@ -17,3 +17,17 @@ export const ErrorJsType = new Map([
   ["Error", "错误"],
   ["InternalError", "js引擎内部错误"],
 ]);
+
+class BaseReportData {
+  time = new Date().getTime()
+  targetUrl = window.location.href
+  constructor(source){
+
+  }
+}
+
+/* 
+  1 错误类型
+    - js
+    - 
+*/
