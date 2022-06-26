@@ -12,7 +12,7 @@ const errorModel = (type, opt) => {
     eventType: "error",
     url: window.location.href,
     time: Date.now(),
-    errorInfo: {
+    info: {
       type,
       ...opt,
     },
@@ -44,7 +44,7 @@ export default {
               filename,
               lineno,
               colno,
-              stack: g_config.debug ? error?.stack : null,
+              stack: g_config.debug ? error?.stack || null : null,
             }
           )
         );
@@ -59,10 +59,11 @@ export default {
             ["LINK", "SCRIPT", "IMG"].indexOf(target.nodeName) !== -1
           ) {
             errorModel(
-              target.nodeName.toLowerCase(),
+              "resource",
               Object.assign(
                 {},
                 {
+                  type: target.nodeName.toLowerCase(),
                   target: target.outerHTML,
                 }
               )
@@ -112,7 +113,7 @@ function _errorFetchInit() {
         .then((res) => {
           if (!res.ok) {
             // 当status不为2XX的时候，上报错误
-            console.log("错误了11", res,arguments[0]);
+            console.log("错误了11", res, arguments[0]);
           }
           return res;
         })
@@ -138,10 +139,10 @@ function _errorAjaxInit() {
   let xmlhttp = window.XMLHttpRequest;
   let _oldSend = xmlhttp.prototype.send;
   let _oldOpen = xmlhttp.prototype.open;
-  let _handleEvent = function (event,url) {
+  let _handleEvent = function (event, url) {
     try {
       if (event && event.currentTarget && event.currentTarget.status !== 200) {
-        console.log("xhr错误", event,url);
+        console.log("xhr错误", event, url);
         // 在此上报错误
       }
     } catch (e) {
@@ -153,7 +154,7 @@ function _errorAjaxInit() {
     return _oldOpen.apply(this, arguments);
   };
   xmlhttp.prototype.send = function () {
-    this.addEventListener("error", (e)=>_handleEvent(e,ajaxUrl)); // 失败
+    this.addEventListener("error", (e) => _handleEvent(e, ajaxUrl)); // 失败
     return _oldSend.apply(this, arguments);
   };
 }

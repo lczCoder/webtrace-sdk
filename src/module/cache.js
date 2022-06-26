@@ -2,7 +2,7 @@ import { g_config } from "@m/config";
 
 /* 缓存处理 */
 const sessionDB = sessionStorage.getItem("EVENT_QUEUE");
-export const pageHashMap = new Map([]); // 页面路由缓存
+// export const pageHashMap = new Set([]); // 页面路由缓存
 export const eventQueue = sessionDB ? JSON.parse(sessionDB) : []; // 上报事件队列
 export const timeMap = new Map(); // 统计事件耗时
 

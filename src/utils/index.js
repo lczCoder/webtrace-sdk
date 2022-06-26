@@ -2,22 +2,22 @@
 // 吧export 提出来到顶部，可以直接查看有哪些工具函数
 import { ErrorStatus } from "@u/declare";
 
-
 /*------------utils导出函数列表------------------------------------------*/
 export {
   __$getBrowserType, // 获取浏览器版本
   __$browserOS, // 获取当前操作系统
   __$uuid, // 获取标识符
+  __$timestampUser, // 获取时间戳标识
   __$checkInit, // 校验sdk appid requestUrl
   __$errorLog, // 控制台错误输出
   __$cutDecimal, // 截取小数位,不四舍五入
+  __$whetherToday, // 判断是否在同一天 13位时间戳
 };
 /*-----------utils内部函数列表-------------------------------------------*/
 /* 
   1、randomLetter  // 随机生成字母
   2、getLocalSessionKey  // 判断LocalSession 是否存在key 有取 无存
 */
-
 
 const __$getBrowserType = () => {
   const ua = window.window.navigator.userAgent.toLowerCase();
@@ -74,6 +74,28 @@ const __$uuid = () => {
   const data = randomLetter(3) + "_" + date.substring(8, 13) + "_" + random;
   if (result == "none") localStorage.setItem("Webtrace_UUID", data);
   return data;
+};
+
+// 埋点当前时间戳 返回一个时间戳标识
+// 传入一个当前时间戳，，判断local中是否存在字段，如果存在就比较，不存在就新建
+const __$timestampUser = (t) => {
+  let status = false;
+  const mark = getLocalSessionKey("URL_TIME");
+  // 比较
+  if (mark && mark !== "none") {
+    const result = __$whetherToday(+mark, +t);
+    if (!result) {
+      localStorage.setItem("URL_TIME", t);
+      status = true;
+    } else {
+      status = false;
+    }
+  } else {
+    // 新建标识
+    localStorage.setItem("URL_TIME", t);
+    status = true;
+  }
+  return status;
 };
 
 /* 
@@ -145,4 +167,13 @@ const __$cutDecimal = (num, len) => {
     num = num.substring(0);
   }
   return parseFloat(num).toFixed(len);
+};
+
+/* 
+  @desc 检测是否是同一天
+  @param {Date} target 标记时间
+  @param {Date} current 当前时间
+*/
+const __$whetherToday = (tar, cur) => {
+  return new Date(tar).toDateString() === new Date(cur).toDateString();
 };
