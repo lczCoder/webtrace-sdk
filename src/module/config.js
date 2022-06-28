@@ -8,8 +8,8 @@ export const g_config = {
   requestUrl: "", // 后端接口
   deviceInfo: deviceOpts, // 设备信息
   pv: true, // 是否开启pv上报
-  performance: false, // 是否开启性能上报
-  error: false, // 是否开启错误上报
+  performance: true, // 是否开启性能上报
+  error: true, // 是否开启错误上报
   debug: true, // 是否开启debug模式
   cache: true, // 是否采用缓存上报策略
   cacheMax:100 // 默认最大缓存上报数量

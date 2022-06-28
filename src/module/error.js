@@ -100,19 +100,18 @@ function rewriteError() {
   // 重写console.error, 可以捕获更全面的报错信息
 }
 
-// fetch的处理
+// 拦截fetch请求 重写
 function _errorFetchInit() {
   if (!window.fetch) return;
   let _oldFetch = window.fetch;
   window.fetch = function () {
-    // console.log('arguments',arguments);
     // arguments[0] 获取请求接口地址
     return (
       _oldFetch
         .apply(this, arguments)
         .then((res) => {
           if (!res.ok) {
-            // 当status不为2XX的时候，上报错误
+            // 当status不为2**的时候，上报错误
             console.log("错误了11", res, arguments[0]);
           }
           return res;
@@ -128,6 +127,7 @@ function _errorFetchInit() {
   };
 }
 
+// 重写ajax请求
 function _errorAjaxInit() {
   let ajaxUrl = "12";
   let protocol = window.location.protocol;

@@ -1,4 +1,5 @@
-import { g_config } from "@m/config";
+import { g_config, http_config } from "@m/config";
+import { _httpSend } from "@m/http";
 
 /* 缓存处理 */
 const sessionDB = sessionStorage.getItem("EVENT_QUEUE");
@@ -14,8 +15,7 @@ export default {
       }
     });
     // 网页销毁,上报缓存中的数据
-    window.onbeforeunload = function (e) {
-    };
+    window.onbeforeunload = function (e) {};
   },
 };
 
@@ -24,10 +24,16 @@ export default {
  */
 
 export const _addEventQueue = (event) => {
-  eventQueue.push(event);
-  if (eventQueue.length > g_config.cacheMax) {
+  const source = {
+    ...http_config,
+    eventInfo: { ...event },
+  };
+  eventQueue.push(source);
+  if (eventQueue.length > 10) {
+    //g_config.cacheMax
     // 事件上报
     // 清除队列
+    _httpSend(JSON.parse(sessionStorage.getItem("EVENT_QUEUE")));
     eventQueue.length = 0;
   }
   // 同步sessionStorage缓存数据

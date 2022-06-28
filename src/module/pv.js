@@ -13,15 +13,12 @@ const pageCache = cache ? new Set(JSON.parse(cache)) : new Set([]);
 const pvModel = (opt) => {
   let type = "uv";
   if (pageCache.has(opt.url)) {
-    console.log("在列表中了");
     // 判断是否在当天范围内
     type = __$timestampUser(new Date().getTime()) ? "uv" : "pv";
   }
   pageCache.add(oldUrl);
   storageLocal("PAGE_CACHE", pageCache);
-  // true uv false pv
   // 如果是uv 就看是否在页面缓存中， yes 返回 no 添加缓存
-
   // const curTime = new Date().getTime();
   // const whether = __$whetherToday(markTime, curTime); // 判断是否同一天
   const data = {
@@ -75,6 +72,6 @@ const storageLocal = (key, data) => {
 
 // 路由切换 事件处理
 const routeChange = () => {
-  oldUrl = window.location.href;
-  pvModel({ url: window.location.href });
+  oldUrl = window.location.pathname;
+  pvModel({ url: window.location.pathname });
 };

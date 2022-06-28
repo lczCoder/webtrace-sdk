@@ -38,9 +38,4 @@ export const _dealTime = (key) => {
     timeMap.delete(key);
     console.log(`'${key}'事件，一共耗时${cost}秒`);
   }
-  /* 
-    1、判断是否开启缓存上报
-      true : 把事件存入事件缓存队列中
-     false : 直接上报
-  */
 };
